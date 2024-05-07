@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="de24c1e1-b424-4a07-bafd-126520330a6d" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="concatinationFlow" doc:id="3d8ae893-51cd-44e1-ba2b-45d9880efd2d" >
+		<http:listener doc:name="Listener" doc:id="391309c7-ed3b-4b5e-8bf4-04fc83309233" config-ref="HTTP_Listener_config" path="/++"/>
+		<set-variable value='#[[{&#10;	"select":"the"&#10;,"home":"work"&#10;	}]]' doc:name="Set Variable" doc:id="9253b127-28ae-42f3-b1e2-47ff6b2f344d" variableName="d1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="01132b06-cf56-4dbe-9ac9-8b039bd1f5e9" message="#[vars.d1]"/>
+		<set-variable value='#[[{&#10;	"seledct":"thde"&#10;,"homle":"wolrk"&#10;	}]]' doc:name="Set Variable" doc:id="028e6272-1848-482f-8b5c-352965aad35c" variableName="d2"/>
+		<ee:transform doc:name="Transform Message" doc:id="0a29d5ae-3c72-4b53-b28c-b98b3b22cc80" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+    "things":
+    {
+        (vars.d1 reduce $),
+        (vars.d2 reduce $)
+    }
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
